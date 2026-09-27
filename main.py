@@ -10,7 +10,7 @@ while True:
     
     # get response from model
     stream = chat(
-        model="astra",
+        model="astra-l",
         messages=messages,
         stream=True,
     )
