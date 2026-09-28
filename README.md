@@ -20,10 +20,8 @@ https://github.com/ollama/ollama-python
 
 https://docs.ollama.com/
 
-Record - pyaudio, whisper
 Respond - free model
-Move - VROID model, HTML, CSS, JS, PyQt6
-Do - routing intent classifier, random modules which can do stuff
+Move - VROID model, panda3d
 
 research desktopmate
 
