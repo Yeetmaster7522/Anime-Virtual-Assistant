@@ -29,5 +29,5 @@ research desktopmate
 
 https://www.youtube.com/watch?v=Y9Gnps0yuv4
 
-deepseek-v4.1-flash:cloud
-qwen2.5:0.5b
+ollama ps
+ollama stop
