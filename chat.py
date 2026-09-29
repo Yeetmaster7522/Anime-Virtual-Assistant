@@ -19,10 +19,10 @@ class LM:
         self.__think = think
         self.__keep_alive = keep_alive
 
-    def talk(self, msg, role="user"):
+    def talk(self, msg, queue, role="user"):
         if msg != "": self.__messages.append({ "role": role, "content": msg })
 
-        content, tool_calls = self.stream()
+        content, tool_calls = self.stream(queue)
 
         # append accumulated fields to the messages for the next request
         if content or tool_calls:
@@ -36,9 +36,9 @@ class LM:
             except Exception as e:
                 print(e)
 
-        if tool_calls: self.talk("")
+        if tool_calls: self.talk("", queue)
 
-    def stream(self):
+    def stream(self, queue):
         # get response from model
         stream = chat(
             model=self.__model,
@@ -55,6 +55,7 @@ class LM:
 
         for chunk in stream:
             print(chunk.message.content, end="", flush=True)
+            queue.put(chunk.message.content)
             content += chunk.message.content
 
             if chunk.message.tool_calls:

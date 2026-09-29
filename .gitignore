@@ -4,3 +4,4 @@ system_prompt.txt
 screenie.png
 apikey.txt
 test.py
+__pycache__/

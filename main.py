@@ -7,15 +7,30 @@ print(os.getenv("OLLAMA_API_KEY"))
 
 
 from chat import LM
+from tts import TTS
+from threading import Thread
+from queue import Queue
 
 
 lm = LM(model="astra-q")
+tts = TTS(rate=200)
 
-while True:
-    msg = input("\n\n-> ")
-    if msg == "/break": break
+def main(queue: Queue):
+    while True:
+        msg = input("\n\n-> ")
+        if msg == "/break": break
 
-    lm.talk(msg)
+        tts.interrupt(queue)
 
-# kill model
-lm.stop()
+        lm.talk(msg, queue)
+        
+    # kill model
+    lm.stop()
+
+q = Queue()
+t1 = Thread(target=main, args=(q, ))
+t2 = Thread(target=tts.worker, args=(q, ), daemon=True)
+t1.start()
+t2.start()
+
+q.join()
