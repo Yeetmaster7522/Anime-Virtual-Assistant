@@ -22,16 +22,6 @@ class TTS:
         except Exception as e:
             print(e)
 
-    def interrupt(self, queue: Queue):
-        try:
-            self.__engine.stop()
-
-            while not queue.empty():
-                queue.get_nowait()
-                queue.task_done()
-        except AttributeError:
-            print("not saying anything right now")
-
     def worker(self, queue: Queue):
         buffer = ""
 
@@ -40,7 +30,7 @@ class TTS:
             buffer += chunk
             # print(buffer)
 
-            if buffer.endswith((".", "!", "?", "\n", "]", ",", ":")):
+            if buffer.endswith((".", "!", "?", "\n", "]", ",", ":", "。", "？", "～", "、")):
                 self.speak(buffer)
                 buffer = ""
             queue.task_done()

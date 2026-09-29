@@ -13,14 +13,16 @@ from queue import Queue
 
 
 lm = LM(model="astra-q")
-tts = TTS(rate=200)
+tts = TTS(rate=200, id=2)
 
 def main(queue: Queue):
     while True:
         msg = input("\n\n-> ")
         if msg == "/break": break
 
-        tts.interrupt(queue)
+        while not queue.empty():
+            queue.get_nowait()
+            queue.task_done()
 
         lm.talk(msg, queue)
         
