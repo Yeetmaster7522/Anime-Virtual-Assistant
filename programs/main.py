@@ -1,7 +1,7 @@
 # Set ollama api key to access web search and fetch tools
 import os
 
-with open("apikey.txt", "r") as f:
+with open("private/apikey.txt", "r") as f:
     key = f.read()
 
 os.environ["OLLAMA_API_KEY"] = key

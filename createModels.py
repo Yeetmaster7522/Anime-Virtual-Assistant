@@ -1,6 +1,6 @@
 import ollama
 
-with open("system_prompt.txt", "r") as f:
+with open("private/system_prompt.txt", "r") as f:
     content = f.read()
     print(content)
 
