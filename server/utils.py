@@ -1,0 +1,2 @@
+def smth():
+    return None
