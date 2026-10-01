@@ -19,10 +19,7 @@ BRAINSTORM
 - look busy
 
 NEED TO
-- create my own functions for web search and navigation
-    - search
-    - fetch
-    - open
+- open programs
 """
 
 # import os
@@ -32,30 +29,34 @@ from pyautogui import screenshot
 import tkinter as tk
 from tkinter import messagebox
 from playwright.sync_api import sync_playwright
-from playwright.async_api import async_playwright
 import html2text
+from PIL import Image
 
-def get_datetime():
+def get_datetime() -> str:
     """
-    Returns local time
+    Returns local time as str
     """
     
     return time.strftime("%a %d %b %Y %H:%M:%S Local Time", time.localtime)
 
-def take_screenshot(filepath: str|None=None):
+def take_screenshot(filepath: str|None=None) -> Image:
     """
     Returns an Image object as well as save it to the specified file location
+
+    Args
+        filepath (str): where the image gets saved
+
+    Returns Image object
     """
 
     return screenshot(filepath)
 
-def run_command(command: list[str]) -> tuple[str, str] | None:
+def run_command(command: str) -> tuple[str, str] | None:
     """
     Executes a system command asynchronously after explicit user confirmation via a GUI dialog.
 
     Args:
-        command (list[str]): The system command split into a list of strings 
-            (e.g., ["git", "status"]). Avoids raw shell parsing vulnerabilities.
+        command (str): The system command
 
     Returns:
         tuple[str, str] | None: A tuple containing (stdout, stderr) as strings if the 
@@ -67,11 +68,11 @@ def run_command(command: list[str]) -> tuple[str, str] | None:
     root = tk.Tk()
     root.withdraw()
 
-    response = messagebox.askyesno(title="Confirmation", message="Do you want to proceed?", detail=" ".join(command), icon="warning")
+    response = messagebox.askyesno(title="Confirmation", message="Do you want to proceed?", detail=command, icon="warning")
 
     if response:
         process = subprocess.Popen(
-            command,
+            command.split(" "),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -82,6 +83,16 @@ def run_command(command: list[str]) -> tuple[str, str] | None:
     return output
 
 def get_website_content(url: str) -> str:
+    """
+    Fetches a webpage and converts its HTML content into plain text
+
+    Args:
+        url (str): The URL of the webpage to fetch.
+
+    Returns:
+        str: The plain-text representation of the webpage content.
+    """
+    
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
@@ -95,24 +106,5 @@ def get_website_content(url: str) -> str:
 
         return converter.handle(raw_html)
 
-def get_top_urls(query, limit=5):
-    return []
-
-async def browser_urls(urls: list[str]) -> None:
-    """
-    Use asyncio.run(browser_urls)
-    """
-    
-    async with async_playwright as p:
-        browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context()
-        for url in urls:
-            page = context.new_page()
-            await page.goto(url)
-        await page.pause()
-
-
 if __name__ == "__main__":
-    pass
-    # get_website_content("https://www.abc.net.au/news/2026-09-30/federal-politics-greens-announce-new-leader-david-shoebridge/107211108")
-    # browser_urls(["https://www.youtube.com/", "https://pypi.org/project/playwright-stealth/", "https://cstimer.net/"])
+    print(get_website_content("https://www.abc.net.au/"))

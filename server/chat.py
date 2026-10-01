@@ -1,4 +1,4 @@
-from ollama import chat, web_search, web_fetch
+from ollama import chat
 from subprocess import run
 from queue import Queue
 
@@ -14,7 +14,7 @@ class LM:
     def __init__(
             self, 
             model: str, 
-            tools={"web_search": web_search, "web_fetch": web_fetch}, 
+            tools: dict, 
             think=False, 
             keep_alive="30m"
             ):

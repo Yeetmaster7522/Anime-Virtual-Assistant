@@ -12,11 +12,25 @@ from chat import LM
 from tts import TTS
 from threading import Thread
 from queue import Queue
+import tools
+from ddgs import DDGS
+from ollama import web_search, web_fetch
 
 
 # setup language model and text-to-speech
-lm = LM(model="astra-q")
-tts = TTS(rate=200, voice_index=0)
+lm = LM(
+    model="astra-q", 
+    tools={
+        "web_search": DDGS().text, 
+        "web_fetch": tools.get_website_content,
+        "get_datetime": tools.get_datetime,
+        "take_screenshot": tools.take_screenshot,
+        "run_command": tools.run_command,
+        "backup_search": web_search,
+        "backup_fetch": web_fetch,
+    }
+)
+tts = TTS(rate=200, voice_index=2)
 
 
 def main(queue: Queue):
