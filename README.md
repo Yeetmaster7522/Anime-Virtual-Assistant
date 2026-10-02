@@ -2,12 +2,12 @@
 
 Locally run AI desktop assistant meant to help me with daily tasks or keep me company.
 
-## Intended features
+## Features
 
-- [ ] Capture voice commands
-- [X] Capture text input
-- [X] Respond to user (in character)
-    - [ ] Make character more natural and responsive
-- [X] Make a 3d model move alongside it
-    - [ ] Make the program determine how the model moves
-- [X] Do tasks on the computer
+- Capture voice, text, and image input.
+- Responds to the user and calls necessary tool calls to aid tasks on the computer.
+- Interactive 3D model that can be dragged around the screen and resized.
+
+## Note
+
+Will be uploading Godot files soon.
