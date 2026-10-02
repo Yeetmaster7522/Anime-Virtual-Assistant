@@ -41,17 +41,12 @@ def get_datetime() -> str:
     
     return time.strftime("%a %d %b %Y %H:%M:%S Local Time", time.localtime())
 
-def take_screenshot(filepath: str|None=None) -> Image:
+def take_screenshot() -> Image:
     """
-    Returns an Image object as well as save it to the specified file location
-
-    Args
-        filepath (str): where the image gets saved
-
-    Returns Image object
+    Takes a screenshot at screenshot.png
     """
 
-    return screenshot(filepath)
+    screenshot("screenshot.png")
 
 def run_command(command: str) -> tuple[str, str] | None:
     """
@@ -94,12 +89,15 @@ def get_website_content(url: str) -> str:
     Returns:
         str: A str containing the content of the webpage in a markdown format
     """
-    
-    return DDGS().extract(url, fmt="text_markdown")["content"]
+
+    result = DDGS().extract(url, fmt="text_markdown")["content"]
+    print("webpage content: " + result)
+    return result
 
 def web_search(query: str, max_results: int) -> list[str]:
     """
-    Finds the top results of a web search including the title, href, and brief description
+    Finds the top results of a web search including the title, href, and brief description.
+    Use alongside get_website_content for more information.
 
     Args:
         query (str): the search terms and query
@@ -108,10 +106,14 @@ def web_search(query: str, max_results: int) -> list[str]:
     Returns:
         str: A JSON-formatted string containing the title, href and body of the search results
     """
-    
-    return json.dumps(DDGS().text(query, max_results=max_results, safesearch="moderate"))
+    result = json.dumps(DDGS().text(query, max_results=max_results, safesearch="moderate"))
+    print("searches: " + result)
+    return result
 
 if __name__ == "__main__":
-    from ddgs import DDGS
-    print(DDGS().text("python programming", max_reslts=5, safesearch="off"))
-    print(DDGS().extract("https://ollama.com/", fmt="text_markdown")["content"])
+    # from ddgs import DDGS
+    # print(DDGS().text("python programming", max_reslts=5, safesearch="off"))
+    # print(DDGS().extract("https://ollama.com/", fmt="text_markdown")["content"])
+
+    # print(get_website_content("https://www.mit.edu/"))
+    pass

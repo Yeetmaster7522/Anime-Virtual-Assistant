@@ -5,8 +5,8 @@ with open("private/system_prompt.txt", "r") as f:
     print(content)
 
 ollama.create(
-    model="astra-q", 
-    from_="qwen3.5:2b", 
+    model="astra-q-uncensored", 
+    from_="fredrezones55/Qwen3.5-Uncensored-HauhauCS-Aggressive:4b", 
     system=content
 )
 

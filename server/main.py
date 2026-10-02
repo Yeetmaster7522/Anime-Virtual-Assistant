@@ -13,20 +13,17 @@ from tts import TTS
 from threading import Thread
 from queue import Queue
 import tools
-from ollama import web_search, web_fetch
 
 
 # setup language model and text-to-speech
 lm = LM(
-    model="astra-q", 
+    model="astra-q-uncensored", 
     tools={
         "web_search": tools.web_search, 
-        "web_fetch": tools.get_website_content,
+        "get_website_content": tools.get_website_content,
         "get_datetime": tools.get_datetime,
         "take_screenshot": tools.take_screenshot,
         "run_command": tools.run_command,
-        "backup_search": web_search,
-        "backup_fetch": web_fetch,
     }
 )
 tts = TTS(rate=200, voice_index=2)
