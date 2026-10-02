@@ -28,16 +28,18 @@ import subprocess
 from pyautogui import screenshot
 import tkinter as tk
 from tkinter import messagebox
-from playwright.sync_api import sync_playwright
-import html2text
+import json
+# from playwright.sync_api import sync_playwright
+# import html2text
 from PIL import Image
+from ddgs import DDGS
 
 def get_datetime() -> str:
     """
     Returns local time as str
     """
     
-    return time.strftime("%a %d %b %Y %H:%M:%S Local Time", time.localtime)
+    return time.strftime("%a %d %b %Y %H:%M:%S Local Time", time.localtime())
 
 def take_screenshot(filepath: str|None=None) -> Image:
     """
@@ -84,27 +86,32 @@ def run_command(command: str) -> tuple[str, str] | None:
 
 def get_website_content(url: str) -> str:
     """
-    Fetches a webpage and converts its HTML content into plain text
+    Fetches the content of a webpage in the markdown format
 
     Args:
-        url (str): The URL of the webpage to fetch.
-
+        url (str): The webpage url/address
+    
     Returns:
-        str: The plain-text representation of the webpage content.
+        str: A str containing the content of the webpage in a markdown format
     """
     
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        page.goto(url)
+    return DDGS().extract(url, fmt="text_markdown")["content"]
 
-        raw_html = page.content()
+def web_search(query: str, max_results: int) -> list[str]:
+    """
+    Finds the top results of a web search including the title, href, and brief description
 
-        converter = html2text.HTML2Text()
-        converter.ignore_links = False
-        converter.ignore_images = True
+    Args:
+        query (str): the search terms and query
+        max_results (int): the amount of results to pull
 
-        return converter.handle(raw_html)
+    Returns:
+        str: A JSON-formatted string containing the title, href and body of the search results
+    """
+    
+    return json.dumps(DDGS().text(query, max_results=max_results, safesearch="moderate"))
 
 if __name__ == "__main__":
-    print(get_website_content("https://www.abc.net.au/"))
+    from ddgs import DDGS
+    print(DDGS().text("python programming", max_reslts=5, safesearch="off"))
+    print(DDGS().extract("https://ollama.com/", fmt="text_markdown")["content"])

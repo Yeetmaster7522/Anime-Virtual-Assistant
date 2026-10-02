@@ -13,7 +13,6 @@ from tts import TTS
 from threading import Thread
 from queue import Queue
 import tools
-from ddgs import DDGS
 from ollama import web_search, web_fetch
 
 
@@ -21,7 +20,7 @@ from ollama import web_search, web_fetch
 lm = LM(
     model="astra-q", 
     tools={
-        "web_search": DDGS().text, 
+        "web_search": tools.web_search, 
         "web_fetch": tools.get_website_content,
         "get_datetime": tools.get_datetime,
         "take_screenshot": tools.take_screenshot,
@@ -64,4 +63,5 @@ t2 = Thread(target=tts.worker, args=(q, ), daemon=True)
 t1.start()
 t2.start()
 
+t1.join()
 q.join()

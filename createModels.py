@@ -6,7 +6,7 @@ with open("private/system_prompt.txt", "r") as f:
 
 ollama.create(
     model="astra-q", 
-    from_="qwen3.5:0.8b", 
+    from_="qwen3.5:2b", 
     system=content
 )
 
