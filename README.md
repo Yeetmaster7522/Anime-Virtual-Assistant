@@ -1,6 +1,6 @@
 # Anime-Virtual-Assistant
-Attempt to make Jarvis as an anime waifu/husbando
 
+Locally run AI desktop assistant meant to help me with daily tasks or keep me company.
 
 ## Intended features
 
