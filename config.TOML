@@ -1,0 +1,7 @@
+title = "Local Desktop AI Agent"
+version = 1.0
+production = false
+
+[constant]
+api_key = ""
+model = ""
