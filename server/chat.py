@@ -34,7 +34,7 @@ class LM:
         self.__think: bool | str = think
         self.__keep_alive: str = keep_alive
 
-    def talk(self, msg: str, queue: Queue, role="user"):
+    def talk(self, msg: str, sound_queue: Queue, role="user"):
         """
         KEY PARAMETERS:
             msg: the msg being sent to the LM
@@ -50,7 +50,7 @@ class LM:
         if msg != "": self.__messages.append({ "role": role, "content": msg })
 
         # gets output from LM
-        content, tool_calls = self.__stream(queue)
+        content, tool_calls = self.__stream(sound_queue)
 
         # append accumulated fields to the messages for the next request
         if content or tool_calls:
@@ -66,9 +66,9 @@ class LM:
                 print(e)
 
         # makes LM talk again to discuss results from tool calls
-        if tool_calls: self.talk("", queue)
+        if tool_calls: self.talk("", sound_queue)
 
-    def __stream(self, queue: Queue) -> tuple[str,list]:
+    def __stream(self, sound_queue: Queue) -> tuple[str,list]:
         """
         KEY PARAMETERS:
             queue: sound queue
@@ -90,7 +90,7 @@ class LM:
 
         for chunk in stream:
             print(chunk.message.content, end="", flush=True)
-            queue.put(chunk.message.content)
+            sound_queue.put(chunk.message.content)
             content += chunk.message.content
 
             if chunk.message.tool_calls:

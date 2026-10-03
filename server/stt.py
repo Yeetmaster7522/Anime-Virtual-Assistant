@@ -1,62 +1,37 @@
-# from faster_whisper import WhisperModel
+import speech_recognition as sr
+from queue import Queue
 
-# model_size = "small.en"
+class STT:
+    def __init__(self, voice_queue: Queue, device_index=None):
+        self.__r = sr.Recognizer()
+        self.__r.pause_threshold = 1.5
+        self.__r.dynamic_energy_threshold = False
+        self.__m = sr.Microphone(device_index=device_index, sample_rate=16000)
 
-# # Run on GPU with int8
-# model = WhisperModel(model_size, device="cuda", compute_type="int8")
+        self.voice_queue = voice_queue
+        
+        print("calibrating")
+        with self.__m as source:
+            self.__r.adjust_for_ambient_noise(source)
+        print("finished calibrating, starting recording")
 
-# segments, info = model.transcribe("private/Recording (9).m4a", language="en", beam_size=5)
+        self.__stop_listening = self.__r.listen_in_background(self.__m, self.__callback)
 
-# print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
+    def __callback(self, recognizer, audio):
+            try:
+                recording = recognizer.recognize_faster_whisper(audio, init_options={"compute_type": "float32"})
+                print(recording)
+                self.voice_queue.put(recording)
+            except sr.UnknownValueError:
+                print("Whisper could not understand audio")
+            except sr.RequestError as e:
+                print(f"Could not request results from Whisper; {e}")
 
-# for segment in segments:
-#     print(segment.text)
+    def stop(self):
+        self.__stop_listening(wait_for_stop=False)
 
-import pyaudio
-import wave
+if __name__ == "__main__":
+    import time
 
-# Source - https://stackoverflow.com/q/40704026
-# Posted by user4719989
-# Retrieved 2026-09-29, License - CC BY-SA 3.0
-
-import pyaudio
-import wave
-
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "voice.wav"
-
-p = pyaudio.PyAudio()
-
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
-
-print("* recording")
-
-frames = []
-
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
-    frames.append(data)
-
-print("* done recording")
-
-stream.stop_stream()
-stream.close()
-p.terminate()
-
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
-
-# https://atsss.medium.com/python-continuous-audio-recording-with-periodic-saving-3421735da820
-# https://docs.cloud.google.com/speech-to-text/docs/v1/transcribe-streaming-audio?source=post_page-----3421735da820-----------------------------------------#speech-streaming-mic-recognize-python
+    stt = STT()
+    while True: time.sleep(0.1)

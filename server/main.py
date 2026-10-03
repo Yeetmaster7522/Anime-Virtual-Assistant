@@ -10,6 +10,7 @@ print(os.getenv("OLLAMA_API_KEY"))
 
 from chat import LM
 from tts import TTS
+from stt import STT
 from threading import Thread
 from queue import Queue
 import tools
@@ -26,10 +27,28 @@ lm = LM(
         "run_command": tools.run_command,
     }
 )
-tts = TTS(rate=200, voice_index=2)
 
+def worker(sound_queue: Queue, voice_queue: Queue):
+    tts = TTS(rate=200, voice_index=2)
+    stt = STT(voice_queue)
+    buffer = ""
 
-def main(queue: Queue):
+    while True:
+        chunk = sound_queue.get()
+        buffer += chunk
+
+        if buffer.endswith((".", "!", "?", "\n", "]", ",", ":", "。", "？", "～", "、")):
+            tts.speak(buffer)
+            buffer = ""
+        sound_queue.task_done()
+
+        user_input = voice_queue.get().strip()
+        if user_input != "":
+            lm.talk(user_input, sound_queue)
+        
+        voice_queue.task_done()
+
+def main(soundQueue: Queue):
     """
     KEY PARAMETERS:
         queue: the sound queue
@@ -44,21 +63,21 @@ def main(queue: Queue):
         if msg == "/break": break
 
         # flush voice queue
-        while not queue.empty():
-            queue.get_nowait()
-            queue.task_done()
+        while not soundQueue.empty():
+            soundQueue.get_nowait()
+            soundQueue.task_done()
 
-        lm.talk(msg, queue)
+        lm.talk(msg, soundQueue)
         
     # kill model
     lm.stop()
 
 # multithreading
-q = Queue()
-t1 = Thread(target=main, args=(q, ))
-t2 = Thread(target=tts.worker, args=(q, ), daemon=True)
+sound_queue = Queue()
+voice_queue = Queue()
+t1 = Thread(target=main, args=(sound_queue, ))
+t2 = Thread(target=worker, args=(sound_queue, voice_queue), daemon=True)
 t1.start()
 t2.start()
 
 t1.join()
-q.join()

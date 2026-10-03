@@ -21,7 +21,7 @@ class TTS:
         self.__volume = volume
         self.voice_index = voice_index
 
-    def __speak(self, txt: str):
+    def speak(self, txt: str):
         """
         KEY PARAMETERS:
             txt: the txt that will be turned into speech
@@ -43,26 +43,3 @@ class TTS:
         self.__engine.say(txt)
         self.__engine.runAndWait()
         self.__engine.stop()
-        
-    def worker(self, queue: Queue):
-        """
-        KEY PARAMETERS
-            queue: the sound queue
-
-        Fulfills all requests in sound queue. This should be a daemon thread.
-
-        Instead of doing single tokens it waits until it accumulates a sentence or so before turning it into speech.
-        """
-        
-        buffer = ""
-
-        while True:
-            # adds new chunks to buffer
-            chunk = queue.get()
-            buffer += chunk
-
-            # if the buffer has accumulated a sentence or half a sentence it will speak it and reset the buffer
-            if buffer.endswith((".", "!", "?", "\n", "]", ",", ":", "。", "？", "～", "、")):
-                self.__speak(buffer)
-                buffer = ""
-            queue.task_done()
